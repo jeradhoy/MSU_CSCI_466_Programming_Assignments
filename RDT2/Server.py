@@ -30,21 +30,23 @@ if __name__ == '__main__':
     parser.add_argument('port', help='Port.', type=int)
     args = parser.parse_args()
     
-    timeout = 5 #close connection if no new data within 5 seconds
-    time_of_last_data = time.time()
+    #timeout = 5 #close connection if no new data within 5 seconds
+    #time_of_last_data = time.time()
     
     rdt = RDT.RDT('server', None, args.port)
+    print("Get to while")
     while(True):
         #try to receiver message before timeout
         msg_S = rdt.rdt_2_1_receive()
         if msg_S is None:
-            if time_of_last_data + timeout < time.time():
-                break
-            else:
-                continue
-        time_of_last_data = time.time()
+            #if time_of_last_data + timeout < time.time():
+            #    break
+            #else:
+            continue
+        #time_of_last_data = time.time()
         
         #convert and reply
+        #time.sleep(.01)
         rep_msg_S = piglatinize(msg_S)
         print('Converted %s \nto \n%s\n' % (msg_S, rep_msg_S))
         rdt.rdt_2_1_send(rep_msg_S)
