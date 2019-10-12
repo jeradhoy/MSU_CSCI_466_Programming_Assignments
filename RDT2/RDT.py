@@ -104,7 +104,7 @@ class Packet:
 
 class RDT:
     ## latest sequence number used in a packet
-    seq_num = 0
+    seq_num = 1
     ## buffer of bytes read from network
     byte_buffer = '' 
 
@@ -121,13 +121,7 @@ class RDT:
 
         print(self.seq_num)
 
-        print("Sender: sending")
-        firstSend = True
         while True:
-
-            if firstSend == False:
-                print("Sender: resending "+ p.get_byte_S())
-            firstSend = False
 
             self.network.udt_send(p.get_byte_S())
             self.byte_buffer = ''
@@ -138,9 +132,11 @@ class RDT:
             length = int(self.byte_buffer[:Packet.length_S_length])
             
 
-            if Packet.corrupt(self.byte_buffer[0:length]):
+            if Packet.corrupt(self.byte_buffer[:length]):
                 print("Sender: Response packet corrupt.")
                 continue
+            
+            responsePacket = Packet.from_byte_S(self.byte_buffer[:length])
 
             responsePacket = Packet.from_byte_S(self.byte_buffer[:length])
             print("Sender: Successfully parsed packet")
@@ -181,7 +177,7 @@ class RDT:
             #extract length of packet
             length = int(self.byte_buffer[:Packet.length_S_length])
             if len(self.byte_buffer) < length:
-                print("Reciever: print 2")
+                self.byte_buffer = self.byte_buffer[length:]
                 break
 
             if Packet.corrupt(self.byte_buffer[0:length]):
@@ -195,6 +191,8 @@ class RDT:
             
             print("Reciever: Parsing packet")
             p = Packet.from_byte_S(self.byte_buffer[0:length])
+            print("Receiver: Message: " + p.msg_S)
+            print("Receiver: ack: " + str(p.isACK()))
 
             if not p.isACK():
 
@@ -215,6 +213,8 @@ class RDT:
                 
                 #deliver data: 
                 ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
+            else:
+                print("p is ack")
 
             #reset buffer to exit while loop
             self.byte_buffer = self.byte_buffer[length:]
