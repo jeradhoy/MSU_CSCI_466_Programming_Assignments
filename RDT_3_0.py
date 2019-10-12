@@ -36,22 +36,13 @@ class Packet:
     def get_byte_S(self) -> str:
         #convert sequence number of a byte field of seq_num_S_length bytes
         seq_num_S = str(self.seq_num).zfill(self.seq_num_S_length)
-        #print (seq_num_S)
         #convert length to a byte field of length_S_length bytes
         length_S = str(self.length_S_length + len(seq_num_S) + self.checksum_length + self.ACK_NAK_length + len(self.msg_S)).zfill(self.length_S_length)
         #compute the checksum
-        #print(length_S + seq_num_S + str(self.ACK) + str(self.NAK) + self.msg_S)
         checksum = hashlib.md5((length_S + seq_num_S + str(self.ACK) + str(self.NAK) + self.msg_S).encode('utf-8'))
         checksum_S = checksum.hexdigest()
         #compile into a string
 
-        # print("Length: " + length_S)
-        # print("Seq_num_S: " + seq_num_S)
-        # print("checksum_S: " + checksum_S)
-        # print("self.ACK: " + str(self.ACK))
-        # print("self.isNAK: " + str(self.NAK))
-        # print("self.msg_s: " + self.msg_S)
-        #print( length_S + seq_num_S + checksum_S + self.msg_S)
         return length_S + seq_num_S + checksum_S + str(self.ACK) + str(self.NAK) + self.msg_S
    
     
@@ -63,13 +54,6 @@ class Packet:
         checksum_S = byte_S[Packet.seq_num_S_length + Packet.seq_num_S_length : Packet.seq_num_S_length + Packet.length_S_length + Packet.checksum_length]
         ack_nak_S = byte_S[Packet.seq_num_S_length + Packet.seq_num_S_length + Packet.checksum_length: Packet.seq_num_S_length + Packet.length_S_length + Packet.checksum_length + Packet.ACK_NAK_length]
         msg_S = byte_S[Packet.seq_num_S_length + Packet.seq_num_S_length + Packet.checksum_length + Packet.ACK_NAK_length :]
-
-        #print(length_S)
-        #print(seq_num_S)
-        #print(checksum_S)
-        #print(ack_nak_S)
-        #print(msg_S)
-        #print(str(length_S + seq_num_S + ack_nak_S + msg_S))
 
         #compute the checksum locally
         checksum = hashlib.md5(str(length_S + seq_num_S + ack_nak_S + msg_S).encode('utf-8'))
@@ -85,13 +69,6 @@ class Packet:
         return self.NAK == 1
 
     def print_debug(self):
-        # return "seq_num: " + str(self.seq_num) + "\n" + \
-        #        "msg_s: " + str(self.msg_S) + "\n" + \
-        #        "ACK: " + str(self.ACK) + "\n" + \
-        #        "NAK: " + str(self.NAK)
-        #print("Length: " + length_S)
-        #print("Seq_num_S: " + seq_num_S)
-        #print("checksum_S: " + checksum_S)
         print("Seq_num_S: " + str(self.seq_num))
         print("self.ACK: " + str(self.ACK))
         print("self.isACK(): " + str(self.isACK()))
@@ -147,9 +124,6 @@ class RDT:
             responsePacket = Packet.from_byte_S(self.byte_buffer[:length])
 
             responsePacket = Packet.from_byte_S(self.byte_buffer[:length])
-            #print("Sender: Successfully parsed packet")
-            #print("expencted seq num: " + str(self.seq_num))
-            #print("received seq num: " + str(responsePacket.seq_num))
 
             if self.seq_num > responsePacket.seq_num:
 
@@ -197,24 +171,18 @@ class RDT:
                 self.byte_buffer = self.byte_buffer[length:]
                 continue
             
-            #print("Reciever: Parsing packet")
             p = Packet.from_byte_S(self.byte_buffer[0:length])
-            #print("Receiver: Message: " + p.msg_S)
-            #print("Receiver: ack: " + str(p.isACK()))
 
             if not p.isACK():
 
                 if self.seq_num > p.seq_num:
-                    #print("Reciever: Not corrupt, sequence number don't match")
                     #send ACK
                     ACK = Packet(p.seq_num, ACK=1)
                     self.network.udt_send(ACK.get_byte_S())
 
                 elif p.seq_num == self.seq_num:
-                    #print("Reciever: Not corrupt, sequence number OK")
                     #send ACK
                     ACK = Packet(self.seq_num, ACK=1)
-                    #print("ack packet: " + ACK.get_byte_S())
                     self.network.udt_send(ACK.get_byte_S())
                     #increment sequence
                     self.seq_num += 1# % 2
