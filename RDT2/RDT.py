@@ -44,7 +44,6 @@ class Packet:
         checksum = hashlib.md5((length_S + seq_num_S + str(self.ACK) + str(self.NAK) + self.msg_S).encode('utf-8'))
         checksum_S = checksum.hexdigest()
         #compile into a string
-
         return length_S + seq_num_S + checksum_S + str(self.ACK) + str(self.NAK) + self.msg_S
    
     
@@ -98,14 +97,12 @@ class RDT:
         p = Packet(self.seq_num, msg_S)
         self.seq_num += 1
 
-        print(self.seq_num)
+        #print(self.seq_num)
 
-        print("Sender: sending")
+        #print("Sender: sending")
         firstSend = True
         while True:
 
-            if firstSend == False:
-                print("Sender: resending")
             firstSend = False
 
             self.network.udt_send(p.get_byte_S())
@@ -122,19 +119,19 @@ class RDT:
                 print("Sender: Response packet corrupt.")
                 continue
 
-            print("Sender: Successfully parsed packet")
+            #print("Sender: Successfully parsed packet")
 
             if self.seq_num > p.seq_num:
                 senderResponse = Packet(self.seq_num, ACK=1)
                 self.network.udt_send(senderResponse.get_byte_S())
 
             if responsePacket.isACK():
-                print("Sender: Received ACK!")
+                #print("Sender: Received ACK!")
                 self.seq_num += 1
                 return
 
             if responsePacket.isNAK():
-                print("Sender: recieved NAK")
+               #print("Sender: recieved NAK")
                 continue
 
 
@@ -155,31 +152,31 @@ class RDT:
             #extract length of packet
             length = int(self.byte_buffer[:Packet.length_S_length])
             if len(self.byte_buffer) < length:
-                print("Reciever: print 2")
+                #print("Reciever: print 2")
                 break
 
             if Packet.corrupt(self.byte_buffer[0:length]):
                 print("Reciever: corrupted packet")
                 #Send NACK
                 NAK = Packet(self.seq_num, NAK=1)
-                print("Receiver: Sending a NAK packet: " + NAK.get_byte_S())
+                #print("Receiver: Sending a NAK packet: " + NAK.get_byte_S())
                 self.network.udt_send(NAK.get_byte_S())
                 self.byte_buffer = self.byte_buffer[length:]
                 continue
             
-            print("Reciever: Parsing packet")
+            #print("Reciever: Parsing packet")
             p = Packet.from_byte_S(self.byte_buffer[0:length])
 
             if not p.isACK():
 
                 if self.seq_num < p.seq_num:
-                    print("Reciever: Not corrupt, sequence number don't match")
+                    #print("Reciever: Not corrupt, sequence number don't match")
                     #send ACK
                     ACK = Packet(p.seq_num, ACK=1)
                     self.network.udt_send(ACK.get_byte_S())
 
                 elif p.seq_num == self.seq_num:
-                    print("Reciever: Not corrupt, sequence number OK")
+                    #print("Reciever: Not corrupt, sequence number OK")
                     #send ACK
                     ACK = Packet(self.seq_num, ACK=1)
                     self.network.udt_send(ACK.get_byte_S())
