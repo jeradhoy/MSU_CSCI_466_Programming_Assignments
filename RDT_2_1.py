@@ -127,6 +127,7 @@ class RDT:
 
             if responsePacket.isNAK():
                 #print("Sender: recieved NAK")
+                print("Resending after NAK")
                 continue
 
 
@@ -158,6 +159,7 @@ class RDT:
                 #print("Receiver: Sending a NAK packet: " + NAK.get_byte_S())
                 self.network.udt_send(NAK.get_byte_S())
                 self.byte_buffer = self.byte_buffer[length:]
+                print("Sending NAK!")
                 continue
             
             p = Packet.from_byte_S(self.byte_buffer[0:length])
@@ -168,12 +170,14 @@ class RDT:
                     #send ACK
                     ACK = Packet(p.seq_num, ACK=1)
                     self.network.udt_send(ACK.get_byte_S())
+                    print("Sending ACK!")
 
                 elif p.seq_num == self.seq_num:
                     #send ACK
                     ACK = Packet(self.seq_num, ACK=1)
                     self.network.udt_send(ACK.get_byte_S())
                     #increment sequence
+                    print("Sending ACK!")
                     self.seq_num += 1# % 2
                 
                 #deliver data: 
