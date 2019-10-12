@@ -180,18 +180,17 @@ class RDT:
                 print("Reciever: print 2")
                 break
 
-            try:
-                print("Reciever: Parsing packet")
-                p = Packet.from_byte_S(self.byte_buffer[0:length])
-
-            except Exception as e:
-
+            if Packet.corrupt(self.byte_buffer[0:length]):
                 print("Reciever: corrupted packet")
                 #Send NACK
                 NAK = Packet(self.seq_num, NAK=1)
                 print("Receiver: Sending a NAK packet: " + NAK.get_byte_S())
                 self.network.udt_send(NAK.get_byte_S())
-                #continue
+                self.byte_buffer = self.byte_buffer[length:]
+                continue
+            
+            print("Reciever: Parsing packet")
+            p = Packet.from_byte_S(self.byte_buffer[0:length])
 
             if not p.isACK():
 

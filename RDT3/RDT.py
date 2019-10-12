@@ -1,6 +1,6 @@
 import Network 
 import argparse
-from time import sleep
+import time 
 import hashlib
 
 class Packet:
@@ -107,6 +107,8 @@ class RDT:
     seq_num = 0
     ## buffer of bytes read from network
     byte_buffer = '' 
+    
+    timeout_secs = 0.5
 
     def __init__(self, role_S, server_S, port):
         self.network = Network.NetworkLayer(role_S, server_S, port)
@@ -132,9 +134,18 @@ class RDT:
             self.network.udt_send(p.get_byte_S())
             self.byte_buffer = ''
             currentTime = time.time()
+            timeout = False
 
             while len(self.byte_buffer) == 0:
                 self.byte_buffer = self.network.udt_receive()
+                
+                if (time.time() - currentTime) > self.timeout_secs:
+                    timeout = True
+                    break
+            
+            if timeout is True:
+                continue
+
 
             length = int(self.byte_buffer[:Packet.length_S_length])
 
@@ -171,7 +182,7 @@ class RDT:
         while self.seq_num == current_seq_num:
 
             #check if we have received enough bytes
-            if(len(self.byte_buffer) < Packet.length_S_length):
+            if len(self.byte_buffer) < Packet.length_S_length:
                 #print("Reciever print 1")
                 break
 
@@ -181,18 +192,17 @@ class RDT:
                 print("Reciever: print 2")
                 break
 
-            try:
-                print("Reciever: Parsing packet")
-                p = Packet.from_byte_S(self.byte_buffer[0:length])
-
-            except Exception as e:
-
+            if Packet.corrupt(self.byte_buffer[0:length]):
                 print("Reciever: corrupted packet")
                 #Send NACK
                 NAK = Packet(self.seq_num, NAK=1)
                 print("Receiver: Sending a NAK packet: " + NAK.get_byte_S())
                 self.network.udt_send(NAK.get_byte_S())
-                #continue
+                self.byte_buffer = self.byte_buffer[length:]
+                continue
+            
+            print("Reciever: Parsing packet")
+            p = Packet.from_byte_S(self.byte_buffer[0:length])
 
             if not p.isACK():
 
@@ -229,13 +239,13 @@ if __name__ == '__main__':
     rdt = RDT(args.role, args.server, args.port)
     if args.role == 'client':
         rdt.rdt_1_0_send('MSG_FROM_CLIENT')
-        sleep(2)
+        time.sleep(2)
         print(rdt.rdt_1_0_receive())
         rdt.disconnect()
         
         
     else:
-        sleep(1)
+        time.sleep(1)
         print(rdt.rdt_1_0_receive())
         rdt.rdt_1_0_send('MSG_FROM_SERVER')
         rdt.disconnect()
