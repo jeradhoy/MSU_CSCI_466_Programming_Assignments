@@ -100,13 +100,7 @@ class RDT:
 
         print(self.seq_num)
 
-        print("Sender: sending")
-        firstSend = True
         while True:
-
-            if firstSend == False:
-                print("Sender: resending")
-            firstSend = False
 
             self.network.udt_send(p.get_byte_S())
             self.byte_buffer = ''
