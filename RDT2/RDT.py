@@ -117,9 +117,6 @@ class RDT:
     def rdt_2_1_send(self, msg_S):
 
         p = Packet(self.seq_num, msg_S)
-        #self.seq_num += \\
-
-        print(self.seq_num)
 
         while True:
 
