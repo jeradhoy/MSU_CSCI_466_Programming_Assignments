@@ -1,5 +1,5 @@
 import argparse
-import RDT
+import RDT_2_1 as RDT
 import time
 
 if __name__ == '__main__':
@@ -21,6 +21,7 @@ if __name__ == '__main__':
     rdt = RDT.RDT('client', args.server, args.port)
     for msg_S in msg_L:
         print('Converting: '+msg_S)
+        print()
         #print("Client: Sending")
         time.sleep(1)
         rdt.rdt_2_1_send(msg_S) #------------------------------------------------------------------------
@@ -41,5 +42,6 @@ if __name__ == '__main__':
         #print the result
         if msg_S:
             print('to: '+msg_S+'\n')
+        print("---------------------------------------------")
         
     rdt.disconnect()
