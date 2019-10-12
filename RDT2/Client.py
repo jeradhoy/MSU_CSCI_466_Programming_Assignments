@@ -21,11 +21,15 @@ if __name__ == '__main__':
     rdt = RDT.RDT('client', args.server, args.port)
     for msg_S in msg_L:
         print('Converting: '+msg_S)
-        rdt.rdt_2_1_send(msg_S)
+        print("Client: Sending")
+        #time.sleep(2)
+        rdt.rdt_2_1_send(msg_S) #------------------------------------------------------------------------
        
         # try to receive message before timeout 
         msg_S = None
         while msg_S == None:
+            #print("Client: Recieving")
+            #print("in loop!")
             msg_S = rdt.rdt_2_1_receive()
             if msg_S is None:
                 if time_of_last_data + timeout < time.time():
@@ -37,6 +41,5 @@ if __name__ == '__main__':
         #print the result
         if msg_S:
             print('to: '+msg_S+'\n')
-        break
         
     rdt.disconnect()
