@@ -36,6 +36,7 @@ class NetworkPacket:
     ## packet encoding lengths 
     dst_addr_S_length = 5
     
+    
     ##@param dst_addr: address of the destination host
     # @param data_S: packet payload
     def __init__(self, dst_addr, data_S):
