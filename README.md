@@ -34,7 +34,7 @@ DATA LINK LAYER (link.py)
 The code also includes `simulation.py` that manages the threads running the different network objects.
 Currently, `simulation.py` defines the following network.
 
-![network_1](https://github.com/msu-netlab/MSU_CSCI_466_PAs/blob/data_plane/images/simple.png)
+![network_1](images/simple.png)
 
 At a high level a network defined in `simulation.py` includes hosts, routers and links.
 `Hosts` generate and receive traffic.
@@ -83,7 +83,7 @@ Your task is to extend the given code to implement several data link router func
 
   First configure `simulation.py` to reflect the following network topology.
 
-  ![network_2](https://github.com/msu-netlab/MSU_CSCI_466_PAs/blob/data_plane/images/network.png)
+  ![network_2](images/network.png)
 
   Second, create routing tables so that both Host 1 and Host 2 can send packets to Host 3 and Host 4 respectively.
   The routing table for each router should be passed into the `Router` constructor, and so should be defined in `simulation.py`.
