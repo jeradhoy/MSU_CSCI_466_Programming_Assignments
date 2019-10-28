@@ -35,21 +35,29 @@ class Interface:
 class NetworkPacket:
     ## packet encoding lengths 
     dst_addr_S_length = 5
+    id_length = 5
+    offset_length = 13
     
     
     ##@param dst_addr: address of the destination host
     # @param data_S: packet payload
-    def __init__(self, dst_addr, data_S):
+    # id: unique id for data to tell that multiple segments belong to same block of data
+    # offset: where the bytes are to be inserted
+    # flag: 1 is more fragments are coming, 0 is final fragment
+    def __init__(self, dst_addr: int, id: int, offset: int, flag: int, data_S: str):
         self.dst_addr = dst_addr
         self.data_S = data_S
         
     ## called when printing the object
     def __str__(self):
         return self.to_byte_S()
-        
+    
     ## convert packet to a byte string for transmission over links
     def to_byte_S(self):
         byte_S = str(self.dst_addr).zfill(self.dst_addr_S_length)
+        byte_S += str(self.id).zfill(self.id_length)
+        byte_S += str(self.offset).zfill(self.offset_length)
+        byte_S += str(self.flag)
         byte_S += self.data_S
         return byte_S
     

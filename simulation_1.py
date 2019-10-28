@@ -45,22 +45,22 @@ if __name__ == '__main__':
     for t in thread_L:
         t.start()
     
-    
     #create some send events    
     #for i in range(3):
-    #   client.udt_send(2, 'This is a longer string for simulation_1. This string is too long for this MTU %d' % i)
+       #client.udt_send(2, 'This is a longer string for simulation_1. This string is too long for this MTU %d' % i)
+       #client.udt_send(2, 'This is short string %d' % i)
     
     message = 'This is a longer string for simulation_1. This string is too long for this MTU'
     segMessage = []
-    isDone = True
-    while(isDone):
+    while(True):
         if(len(message) > mtu-5):
             segMessage.append(message[0:mtu-6])
             message = message[mtu:]
         else:
             segMessage.append(message)
-            isDone = False
+            break
         
+
     for m in segMessage:
         client.udt_send(2, m)
     
