@@ -76,6 +76,29 @@ class NetworkPacket:
         flag = int(byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length: NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length + 1])
         data_S = byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length + NetworkPacket.flag_len: ]
         return self(dst_addr, id, offset, flag, data_S)
+    
+    # def fragment(self, )
+
+                    #     if (len(pkt_S) <= out_mtu):
+                    #     self.out_intf_L[i].put(p.to_byte_S(), True)
+                    #     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
+                    #         % (self, p, i, i, out_mtu))
+                    # # if outgoing MTU is too small, fragment packet to fit. Send all new fragment packets.
+                    # else:
+                    #     payload = p.data_S 
+                    #     fragList = []
+                    #     newPayloadSize = out_mtu - NetworkPacket.header_len
+                    #     while (True)):
+                    #         fragList.append(payload[0:newPayloadSize - 1])
+                    #         payload = payload[newPayloadSize: ]
+                    #         if (len(payload) < newPayloadSize):
+                    #             fragList.append(payload)
+                    #             break
+                    #     for fragment in fragList:
+                    #         fragPacket = NetworkPacket(p.dst_addr, p.id, p. )
+                    #         self.out_intf_L[i].put(p.to_byte_S(), True)
+                    #         print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
+                    #             % (self, p, i, i, out_mtu))
 
     def __str__(self):
         return '\n'.join("{k}: {v}".format(k=key,v=val) for (key,val) in self.__dict__.items())
@@ -164,25 +187,11 @@ class Router:
                     # HERE you will need to implement a lookup into the 
                     # forwarding table to find the appropriate outgoing interface
                     # for now we assume the outgoing interface is also i
-                    if (len(pkt_S) <= out_mtu):
-                        self.out_intf_L[i].put(p.to_byte_S(), True)
-                        print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
-                            % (self, p, i, i, out_mtu))
-                    else:
-                        payload = p.data_S
-                        fragList = []
-                        newPayloadSize = out_mtu - NetworkPacket.header_len
-                        while (True)):
-                            fragList.append(payload[0:newPayloadSize - 1])
-                            payload = payload[newPayloadSize: ]
-                            if (len(payload) < newPayloadSize):
-                                fragList.append(payload)
-                                break
-                        for fragment in fragList:
-                            fragPacket = NetworkPacket(p.dst_addr, p.id, p. )
-                            self.out_intf_L[i].put(p.to_byte_S(), True)
-                            print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
-                                % (self, p, i, i, out_mtu))
+
+                    # if outgoing MTU is big enough, send packet
+                    self.out_intf_L[i].put(p.to_byte_S(), True)
+                    print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
+                        % (self, p, i, i, out_mtu))
                         
             except queue.Full:
                 print('%s: packet "%s" lost on interface %d' % (self, p, i))
