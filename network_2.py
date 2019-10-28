@@ -77,29 +77,18 @@ class NetworkPacket:
         return self(dst_addr, id, offset, flag, data_S)
 
     def __str__(self):
-        return_string = "Destingation Address: " + str(self.dst_addr) + "\n" + \
-                        "id: " + str(self.id) + "\n" + \
-                        "offset: " + str(self.offset) + "\n" + \
-                        "flag: " + str(self.flag) + "\n" + \
-                        "data_S: " + str(self.data_S)
-        return return_string
+        return '\n'.join("{k}: {v}".format(k=key,v=val) for (key,val) in self.__dict__.items())
 
     
 
-pack = NetworkPacket(5, 1, 0, 0, "meowwwww")
-print(pack)
+# pack = NetworkPacket(5, 1, 0, 0, "meowwwww")
+# print(pack)
 
-byte_S = pack.to_byte_S()
-print(pack_str)
-new_pack = NetworkPacket.from_byte_S(pack_str)
-print(new_pack)
+# byte_S = pack.to_byte_S()
+# print(pack_str)
+# new_pack = NetworkPacket.from_byte_S(pack_str)
+# print(new_pack)
 
-        byte_S[0 : NetworkPacket.dst_addr_S_length]
-        byte_S[NetworkPacket.dst_addr_S_length:NetworkPacket.dst_addr_S_length + NetworkPacket.id_length]
-        byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.id_length: NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length]
-        byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length: NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length + 1]
-        byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length: ]
-    
 
 ## Implements a network host for receiving and transmitting data
 class Host:
