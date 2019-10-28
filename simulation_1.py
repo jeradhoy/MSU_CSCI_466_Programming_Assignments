@@ -60,7 +60,7 @@ if __name__ == '__main__':
             segMessage.append(message)
             break
         
-    
+
     for m in segMessage:
         client.udt_send(2, m)
     

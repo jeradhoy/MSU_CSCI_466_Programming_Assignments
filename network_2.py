@@ -40,6 +40,7 @@ class NetworkPacket:
     flag_len = 1
     header_len = dst_addr_S_length + id_length + offset_length + flag_len 
     
+    
     ##@param dst_addr: address of the destination host
     # @param data_S: packet payload
     # id: unique id for data to tell that multiple segments belong to same block of data
@@ -158,13 +159,31 @@ class Router:
                 pkt_S = self.in_intf_L[i].get()
                 #if packet exists make a forwarding decision
                 if pkt_S is not None:
+                    out_mtu = self.out_intf_L[i].mtu
                     p = NetworkPacket.from_byte_S(pkt_S) #parse a packet out
                     # HERE you will need to implement a lookup into the 
                     # forwarding table to find the appropriate outgoing interface
                     # for now we assume the outgoing interface is also i
-                    self.out_intf_L[i].put(p.to_byte_S(), True)
-                    print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
-                        % (self, p, i, i, self.out_intf_L[i].mtu))
+                    if (len(pkt_S) <= out_mtu):
+                        self.out_intf_L[i].put(p.to_byte_S(), True)
+                        print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
+                            % (self, p, i, i, out_mtu))
+                    else:
+                        payload = p.data_S
+                        fragList = []
+                        newPayloadSize = out_mtu - NetworkPacket.header_len
+                        while (True)):
+                            fragList.append(payload[0:newPayloadSize - 1])
+                            payload = payload[newPayloadSize: ]
+                            if (len(payload) < newPayloadSize):
+                                fragList.append(payload)
+                                break
+                        for fragment in fragList:
+                            fragPacket = NetworkPacket(p.dst_addr, p.id, p. )
+                            self.out_intf_L[i].put(p.to_byte_S(), True)
+                            print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
+                                % (self, p, i, i, out_mtu))
+                        
             except queue.Full:
                 print('%s: packet "%s" lost on interface %d' % (self, p, i))
                 pass
