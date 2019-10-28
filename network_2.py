@@ -69,7 +69,7 @@ class NetworkPacket:
     ## extract a packet object from a byte string
     # @param byte_S: byte string representation of the packet
     @classmethod
-    def from_byte_S(self, byte_S):
+    def from_byte_S(self, byte_S: str):
         dst_addr = int(byte_S[0 : NetworkPacket.dst_addr_S_length])
         id = int(byte_S[NetworkPacket.dst_addr_S_length:NetworkPacket.dst_addr_S_length + NetworkPacket.id_length])
         offset = int(byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.id_length: NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length])
@@ -100,7 +100,7 @@ class NetworkPacket:
                     #         print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
                     #             % (self, p, i, i, out_mtu))
 
-    def __str__(self):
+    def print(self):
         return '\n'.join("{k}: {v}".format(k=key,v=val) for (key,val) in self.__dict__.items())
 
     
@@ -118,7 +118,7 @@ class NetworkPacket:
 class Host:
     
     ##@param addr: address of this node represented as an integer
-    def __init__(self, addr):
+    def __init__(self, addr: int):
         self.addr = addr
         self.in_intf_L = [Interface()]
         self.out_intf_L = [Interface()]
@@ -131,8 +131,8 @@ class Host:
     ## create a packet and enqueue for transmission
     # @param dst_addr: destination address for the packet
     # @param data_S: data being transmitted to the network layer
-    def udt_send(self, dst_addr, data_S):
-        p = NetworkPacket(dst_addr, data_S)
+    def udt_send(self, dst_addr: int, id: int, offset: int, flag: int, data_S: str):
+        p = NetworkPacket(dst_addr, id, offset, flag, data_S)
         self.out_intf_L[0].put(p.to_byte_S()) #send packets always enqueued successfully
         print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
         
