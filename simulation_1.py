@@ -10,7 +10,7 @@ from time import sleep
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
-simulation_time = 1 #give the network sufficient time to transfer all packets before quitting
+simulation_time = 2 #give the network sufficient time to transfer all packets before quitting
 mtu = 50
 
 if __name__ == '__main__':
@@ -50,18 +50,16 @@ if __name__ == '__main__':
     #for i in range(3):
     #   client.udt_send(2, 'This is a longer string for simulation_1. This string is too long for this MTU %d' % i)
     
-    message = "This is a longer string for simulation_1. This string is too long for this MTU"
-    segMessage = list()
-    i = 0
-    isDone = False
+    message = 'This is a longer string for simulation_1. This string is too long for this MTU'
+    segMessage = []
+    isDone = True
     while(isDone):
-        if(message.__len__ > 50):
-            segMessage[i] = message[0:mtu]
+        if(len(message) > mtu-5):
+            segMessage.append(message[0:mtu-6])
             message = message[mtu:]
-            i+1
-        
         else:
-            isDone = True
+            segMessage.append(message)
+            isDone = False
         
     
 
