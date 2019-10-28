@@ -5,6 +5,7 @@ Created on Oct 12, 2016
 '''
 import queue
 import threading
+from typing import *
 
 
 ## wrapper class for a queue of packets
