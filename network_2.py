@@ -43,7 +43,8 @@ class NetworkPacket:
     
     ##@param dst_addr: address of the destination host
     # @param data_S: packet payload
-    # id: unique id for data to tell that multiple segments belong to same block of data
+    #this is a dummy comment for merge practice
+    # id: unique id for data to tell that  segments belong to same block of data
     # offset: where the bytes are to be inserted
     # flag: 1 is more fragments are coming, 0 is final fragment
     def __init__(self, dst_addr: int, id: int, offset: int, flag: int, data_S: str):
@@ -52,7 +53,6 @@ class NetworkPacket:
         self.offset = offset
         self.flag = flag
         self.data_S = data_S
-        
     ## called when printing the object
     def __str__(self):
         return self.to_byte_S()
