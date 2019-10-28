@@ -76,7 +76,7 @@ class NetworkPacket:
         data_S = byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length + NetworkPacket.flag_len: ]
         return self(dst_addr, id, offset, flag, data_S)
 
-    def __str__(self):
+    def print(self):
         return '\n'.join("{k}: {v}".format(k=key,v=val) for (key,val) in self.__dict__.items())
 
     
