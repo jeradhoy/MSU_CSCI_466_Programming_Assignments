@@ -78,7 +78,7 @@ Your task is to extend the given code to implement several data link router func
 
 
 * \[13 points\] The current router implementation supports very simple forwarding.
-  The router has only one input and one output interface and just forwards packets from one to the other.
+  The router has only onee input and  input and one output interface and just forwards packets from one to the other.
   Your tasks is to implement forwarding of packets within routers based on routing tables.
 
   First configure `simulation.py` to reflect the following network topology.
