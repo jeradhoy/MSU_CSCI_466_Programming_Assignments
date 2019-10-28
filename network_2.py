@@ -37,6 +37,8 @@ class NetworkPacket:
     dst_addr_S_length = 5
     id_length = 5
     offset_length = 13
+    flag_len = 1
+    header_len = dst_addr_S_length + id_length + offset_length + flag_len 
     
     
     ##@param dst_addr: address of the destination host
@@ -46,6 +48,9 @@ class NetworkPacket:
     # flag: 1 is more fragments are coming, 0 is final fragment
     def __init__(self, dst_addr: int, id: int, offset: int, flag: int, data_S: str):
         self.dst_addr = dst_addr
+        self.id = id
+        self.offset = offset
+        self.flag = flag
         self.data_S = data_S
         
     ## called when printing the object
@@ -66,11 +71,25 @@ class NetworkPacket:
     @classmethod
     def from_byte_S(self, byte_S):
         dst_addr = int(byte_S[0 : NetworkPacket.dst_addr_S_length])
-        data_S = byte_S[NetworkPacket.dst_addr_S_length : ]
-        return self(dst_addr, data_S)
-    
+        id = int(byte_S[NetworkPacket.dst_addr_S_length:NetworkPacket.dst_addr_S_length + NetworkPacket.id_length])
+        offset = int(byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.id_length: NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length])
+        flag = int(byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length: NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length + 1])
+        data_S = byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length + NetworkPacket.flag_len: ]
+        return self(dst_addr, id, offset, flag, data_S)
+
+    def __str__(self):
+        return '\n'.join("{k}: {v}".format(k=key,v=val) for (key,val) in self.__dict__.items())
 
     
+
+# pack = NetworkPacket(5, 1, 0, 0, "meowwwww")
+# print(pack)
+
+# byte_S = pack.to_byte_S()
+# print(pack_str)
+# new_pack = NetworkPacket.from_byte_S(pack_str)
+# print(new_pack)
+
 
 ## Implements a network host for receiving and transmitting data
 class Host:
