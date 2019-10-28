@@ -11,7 +11,7 @@ import threading
 class Interface:
     ## @param maxsize - the maximum size of the queue storing packets
     def __init__(self, maxsize=0):
-        self.queue = queue.Queue(maxsize);
+        self.queue = queue.Queue(maxsize)
         self.mtu = None
     
     ##get packet from the queue interface
@@ -43,6 +43,7 @@ class NetworkPacket:
     
     ##@param dst_addr: address of the destination host
     # @param data_S: packet payload
+    #dummy comment for purposes of merge conflict practice
     # id: unique id for data to tell that multiple segments belong to same block of data
     # offset: where the bytes are to be inserted
     # flag: 1 is more fragments are coming, 0 is final fragment
