@@ -61,9 +61,6 @@ if __name__ == '__main__':
             break
         
     
-    print(segMessage)
-    exit
-
     for m in segMessage:
         client.udt_send(2, m)
     
