@@ -201,14 +201,14 @@ class Host:
         while True:
             # receive data arriving to the in interface
             pkt_S = self.udt_receive()
-            if pkt is not None:
+            if pkt_S is not None:
                 p = NetworkPacket.from_byte_S(pkt_S)
                 pkt_list.append(p)
                 if p.flag == 0: 
-                    
-            
-            
-            print('%s: received packet "%s" on the in interface' % (self, pkt_S))
+                    full_packet = NetworkPacket.defragment(pkt_list)
+                    pkt_list = []
+                    print('%s: received packet "%s" on the in interface' % (self, full_packet.to_byte_S()))
+
             # terminate
             if(self.stop):
                 print(threading.currentThread().getName() + ': Ending')
