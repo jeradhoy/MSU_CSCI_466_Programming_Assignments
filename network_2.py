@@ -91,7 +91,7 @@ class NetworkPacket:
         newPayloadSize = mtu - NetworkPacket.header_len
         msg = packet.data_S
         packet_list = []
-        offset = 0
+        currentOffset = packet.offset
         currentFlag = packet.flag
 
         while True:
@@ -101,17 +101,16 @@ class NetworkPacket:
                 print("breaking up packet")
                 msg_seg = msg[0:newPayloadSize]
                 msg = msg[newPayloadSize:]
-                new_packet = cls(packet.dst_addr, packet.id, offset, 1, msg_seg)
+                new_packet = cls(packet.dst_addr, packet.id, currentOffset, 1, msg_seg)
                 packet_list.append(new_packet)
-                offset += newPayloadSize
+                currentOffset += newPayloadSize
             else:
-
                 if currentFlag == 0:
                     flagToUse = 0
                 else:
                     flagToUse = 1
 
-                new_packet = cls(packet.dst_addr, packet.id, offset, flagToUse, msg)
+                new_packet = cls(packet.dst_addr, packet.id, currentOffset, flagToUse, msg)
                 packet_list.append(new_packet)
                 break
 
