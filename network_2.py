@@ -78,31 +78,41 @@ class NetworkPacket:
         data_S = byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.id_length + NetworkPacket.offset_length + NetworkPacket.flag_len: ]
         return self(dst_addr, id, offset, flag, data_S)
     
-    # def fragment(self, )
+    @classmethod
+    def fragment(self, packet: NetworkPacket, mtu: int) -> List[NetworkPacket]:
 
-                    #     if (len(pkt_S) <= out_mtu):
-                    #     self.out_intf_L[i].put(p.to_byte_S(), True)
-                    #     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
-                    #         % (self, p, i, i, out_mtu))
-                    # # if outgoing MTU is too small, fragment packet to fit. Send all new fragment packets.
-                    # else:
-                    #     payload = p.data_S 
-                    #     fragList = []
-                    #     newPayloadSize = out_mtu - NetworkPacket.header_len
-                    #     while (True)):
-                    #         fragList.append(payload[0:newPayloadSize - 1])
-                    #         payload = payload[newPayloadSize: ]
-                    #         if (len(payload) < newPayloadSize):
-                    #             fragList.append(payload)
-                    #             break
-                    #     for fragment in fragList:
-                    #         fragPacket = NetworkPacket(p.dst_addr, p.id, p. )
-                    #         self.out_intf_L[i].put(p.to_byte_S(), True)
-                    #         print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
-                    #             % (self, p, i, i, out_mtu))
+        newPayloadSize = mtu - NetworkPacket.header_len
+        msg = packet.data_S
+        packet_list = []
+        offset = 0
+
+        while True:
+
+            if len(msg) > newPayloadSize:
+
+                print("breaking up packet")
+                msg_seg = msg[0:newPayloadSize]
+                msg = msg[newPayloadSize:]
+                new_packet = self(packet.dst_addr, packet.id, offset, 0, msg_seg)
+                packet_list.append(new_packet)
+                offset += newPayloadSize
+            else:
+                new_packet = self(packet.dst_addr, packet.id, offset, 1, msg)
+                packet_list.append(new_packet)
+                break
+
+        return packet_list
+
+
+    @classmethod
+    def defragment(self, packet_list: List[NetworkPacket]) -> NetworkPacket:
+        sorted_packet_list = sorted(pack_list, key=lambda x: x.offset)
+        message_joined = "".join([packet.data_S for packet in sorted_packet_list])
+        new_packet = self(packet_list[0].dst_addr, packet_list[0].id, 0, 0, message_joined)
+        return new_packet
 
     def print(self):
-        return '\n'.join("{k}: {v}".format(k=key,v=val) for (key,val) in self.__dict__.items())
+        print('\n'.join("{k}: {v}".format(k=key,v=val) for (key,val) in self.__dict__.items()))
 
     
 
@@ -114,6 +124,14 @@ class NetworkPacket:
 # new_pack = NetworkPacket.from_byte_S(pack_str)
 # print(new_pack)
 
+pack = NetworkPacket(5, 1, 0, 0, "Hellow meowww meow meow i like to go to the toilet and meowoooowowowowowo")
+len(pack.to_byte_S())
+pack_list = NetworkPacket.fragment(pack, 50)
+pack_list[0].print()
+pack_list[1].print()
+pack_list[2].print()
+
+NetworkPacket.defragment(pack_list).print()
 
 ## Implements a network host for receiving and transmitting data
 class Host:
