@@ -92,6 +92,7 @@ class NetworkPacket:
         msg = packet.data_S
         packet_list = []
         offset = 0
+        currentFlag = packet.flag
 
         while True:
 
@@ -104,7 +105,13 @@ class NetworkPacket:
                 packet_list.append(new_packet)
                 offset += newPayloadSize
             else:
-                new_packet = cls(packet.dst_addr, packet.id, offset, 0, msg)
+
+                if currentFlag == 0:
+                    flagToUse = 0
+                else:
+                    flagToUse = 1
+
+                new_packet = cls(packet.dst_addr, packet.id, offset, flagToUse, msg)
                 packet_list.append(new_packet)
                 break
 
