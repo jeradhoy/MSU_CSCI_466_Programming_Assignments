@@ -180,13 +180,13 @@ class Host:
             # send all packet fragments
             for pkt in pkt_fragment_list:
                 self.out_intf_L[0].put(pkt.to_byte_S())
-                #print('%s: sending packet "%s" on the out interface with mtu=%d' %
-                #    (self, p, self.out_intf_L[0].mtu))
+                print('%s: sending packet "%s" on the out interface with mtu=%d' %
+                   (self, p, self.out_intf_L[0].mtu))
         else:
             # if outgoing MTU is big enough, send packet
             self.out_intf_L[0].put(p.to_byte_S())
-            #print('%s: sending packet "%s" on the out interface with mtu=%d' %
-            #    (self, p, self.out_intf_L[0].mtu))
+            print('%s: sending packet "%s" on the out interface with mtu=%d' %
+               (self, p, self.out_intf_L[0].mtu))
 
         # send packets always enqueued successfully
         # self.out_intf_L[0].put(p.to_byte_S())
