@@ -126,28 +126,23 @@ class NetworkPacket:
                         for (key, val) in self.__dict__.items()))
 
 
-# pack = NetworkPacket(5, 1, 0, 0, "meowwwww")
-# print(pack)
+# use this to test fragmentation
 
-# byte_S = pack.to_byte_S()
-# print(pack_str)
-# new_pack = NetworkPacket.from_byte_S(pack_str)
-# print(new_pack)
-pack = NetworkPacket(
-    5, 1, 0, 0, "Hellow meowww meow meow i like to go to the toilet and meowoooowowowowowo")
-len(pack.to_byte_S())
-print("MTU = 50")
-print("Packet Header Length: " + str(NetworkPacket.header_len))
-print("new packet data length: " + str(50 - NetworkPacket.header_len))
-pack_list = NetworkPacket.fragment(pack, 50)
-pack_list[0].print()
-print()
-pack_list[1].print()
-print()
-pack_list[2].print()
-print()
+# pack = NetworkPacket(
+#     5, 1, 0, 0, "Hellow meowww meow meow i like to go to the toilet and meowoooowowowowowo")
+# len(pack.to_byte_S())
+# print("MTU = 50")
+# print("Packet Header Length: " + str(NetworkPacket.header_len))
+# print("new packet data length: " + str(50 - NetworkPacket.header_len))
+# pack_list = NetworkPacket.fragment(pack, 50)
+# pack_list[0].print()
+# print()
+# pack_list[1].print()
+# print()
+# pack_list[2].print()
+# print()
 
-NetworkPacket.defragment(pack_list).print()
+# NetworkPacket.defragment(pack_list).print()
 
 # Implements a network host for receiving and transmitting data
 
@@ -170,10 +165,25 @@ class Host:
     # @param data_S: data being transmitted to the network layer
     def udt_send(self, dst_addr: int, id: int, offset: int, flag: int, data_S: str):
         p = NetworkPacket(dst_addr, id, offset, flag, data_S)
+        out_mtu = self.out_intf_L[0].mtu
+
+        if (len(p.to_byte_S()) > out_mtu):
+            print('did I get here (udt send)?')
+            pkt_fragment_list = NetworkPacket.fragment(p,out_mtu)
+            for pkt in pkt_fragment_list:
+                self.out_intf_L[0].put(pkt.to_byte_S())
+                print('%s: sending packet "%s" on the out interface with mtu=%d' %
+                    (self, p, self.out_intf_L[0].mtu))
+        else:
+            # if outgoing MTU is big enough, send packet
+            self.out_intf_L[0].put(p.to_byte_S())
+            print('%s: sending packet "%s" on the out interface with mtu=%d' %
+                (self, p, self.out_intf_L[0].mtu))
+
         # send packets always enqueued successfully
-        self.out_intf_L[0].put(p.to_byte_S())
-        print('%s: sending packet "%s" on the out interface with mtu=%d' %
-              (self, p, self.out_intf_L[0].mtu))
+        # self.out_intf_L[0].put(p.to_byte_S())
+        # print('%s: sending packet "%s" on the out interface with mtu=%d' %
+        #       (self, p, self.out_intf_L[0].mtu))
 
     # receive packet from the network layer
     def udt_receive(self):
@@ -227,10 +237,18 @@ class Router:
                     # forwarding table to find the appropriate outgoing interface
                     # for now we assume the outgoing interface is also i
 
-                    # if outgoing MTU is big enough, send packet
-                    self.out_intf_L[i].put(p.to_byte_S(), True)
-                    print('%s: forwarding packet "%s" from interface %d to %d with mtu %d'
-                          % (self, p, i, i, out_mtu))
+                    if (len(pkt_S) > out_mtu):
+                        print('did I get here? router forward')
+                        pkt_fragment_list = NetworkPacket.fragment(p, out_mtu)
+                        for pkt in pkt_fragment_list:
+                            self.out_intf_L[i].put(pkt.to_byte_S(), True)
+                            print('%s: forwarding packet "%s" from interface %d to %d with mtu %d'
+                                % (self, p, i, i, out_mtu))
+                    else:
+                        # if outgoing MTU is big enough, send packet
+                        self.out_intf_L[i].put(p.to_byte_S(), True)
+                        print('%s: forwarding packet "%s" from interface %d to %d with mtu %d'
+                              % (self, p, i, i, out_mtu))
 
             except queue.Full:
                 print('%s: packet "%s" lost on interface %d' % (self, p, i))
