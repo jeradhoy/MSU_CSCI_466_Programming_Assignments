@@ -188,27 +188,27 @@ class Host:
         #       (self, p, self.out_intf_L[0].mtu))
 
     # receive packet from the network layer
-    def udt_receive(self):
-        packet_list = []
-        while True:
-            pkt_S = self.in_intf_L[0].get()
-            if pkt_S is not None:
-                p = NetworkPacket.from_byte_S(pkt_S)
-                if (p.flag > 0):
-                    packet_list.append(p)
-                else:
-                    packet_list.append(p)
-                    break
-        full_Packet = NetworkPacket.defragment(packet_list)
-        pkt_S = full_Packet.to_byte_S()
-        print('%s: received packet "%s" on the in interface' % (self, pkt_S))
+    def udt_receive(self) -> str:
+        pkt_S = self.in_intf_L[0].get()
+        if pkt_S is not None:
+            return pkt_S
+          
 
     # thread target for the host to keep receiving data
     def run(self):
         print(threading.currentThread().getName() + ': Starting')
+        pkt_list = []
         while True:
             # receive data arriving to the in interface
-            self.udt_receive()
+            pkt_S = self.udt_receive()
+            if pkt is not None:
+                p = NetworkPacket.from_byte_S(pkt_S)
+                pkt_list.append(p)
+                if p.flag == 0: 
+                    
+            
+            
+            print('%s: received packet "%s" on the in interface' % (self, pkt_S))
             # terminate
             if(self.stop):
                 print(threading.currentThread().getName() + ': Ending')
