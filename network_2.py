@@ -114,7 +114,7 @@ class NetworkPacket:
     # for some reason the function notations was breaking the code, so I removed them. 
     # I prefer having them, so not sure how to get them back - Matteo
     def defragment(cls, packet_list):
-        sorted_packet_list = sorted(pack_list, key=lambda x: x.offset)
+        sorted_packet_list = sorted(packet_list, key=lambda x: x.offset)
         message_joined = "".join(
             [packet.data_S for packet in sorted_packet_list])
         new_packet = cls(packet_list[0].dst_addr,
@@ -167,18 +167,20 @@ class Host:
         p = NetworkPacket(dst_addr, id, offset, flag, data_S)
         out_mtu = self.out_intf_L[0].mtu
 
+        # if outgoing MTU is too small, fragment packet
         if (len(p.to_byte_S()) > out_mtu):
-            print('did I get here (udt send)?')
+            #generate packet fragments
             pkt_fragment_list = NetworkPacket.fragment(p,out_mtu)
+            # send all packet fragments
             for pkt in pkt_fragment_list:
                 self.out_intf_L[0].put(pkt.to_byte_S())
-                print('%s: sending packet "%s" on the out interface with mtu=%d' %
-                    (self, p, self.out_intf_L[0].mtu))
+                #print('%s: sending packet "%s" on the out interface with mtu=%d' %
+                #    (self, p, self.out_intf_L[0].mtu))
         else:
             # if outgoing MTU is big enough, send packet
             self.out_intf_L[0].put(p.to_byte_S())
-            print('%s: sending packet "%s" on the out interface with mtu=%d' %
-                (self, p, self.out_intf_L[0].mtu))
+            #print('%s: sending packet "%s" on the out interface with mtu=%d' %
+            #    (self, p, self.out_intf_L[0].mtu))
 
         # send packets always enqueued successfully
         # self.out_intf_L[0].put(p.to_byte_S())
@@ -187,9 +189,19 @@ class Host:
 
     # receive packet from the network layer
     def udt_receive(self):
-        pkt_S = self.in_intf_L[0].get()
-        if pkt_S is not None:
-            print('%s: received packet "%s" on the in interface' % (self, pkt_S))
+        packet_list = []
+        while True:
+            pkt_S = self.in_intf_L[0].get()
+            if pkt_S is not None:
+                p = NetworkPacket.from_byte_S(pkt_S)
+                if (p.flag > 0):
+                    packet_list.append(p)
+                else:
+                    packet_list.append(p)
+                    break
+        full_Packet = NetworkPacket.defragment(packet_list)
+        pkt_S = full_Packet.to_byte_S()
+        print('%s: received packet "%s" on the in interface' % (self, pkt_S))
 
     # thread target for the host to keep receiving data
     def run(self):
@@ -237,21 +249,23 @@ class Router:
                     # forwarding table to find the appropriate outgoing interface
                     # for now we assume the outgoing interface is also i
 
+                    # if packet is too big for outgoing MTU, fragment packet
                     if (len(pkt_S) > out_mtu):
-                        print('did I get here? router forward')
+                        # generate packet fragments
                         pkt_fragment_list = NetworkPacket.fragment(p, out_mtu)
+                        # send all packet fragments
                         for pkt in pkt_fragment_list:
                             self.out_intf_L[i].put(pkt.to_byte_S(), True)
-                            print('%s: forwarding packet "%s" from interface %d to %d with mtu %d'
-                                % (self, p, i, i, out_mtu))
+                            #print('%s: forwarding packet "%s" from interface %d to %d with mtu %d'
+                            #    % (self, p, i, i, out_mtu))
                     else:
                         # if outgoing MTU is big enough, send packet
                         self.out_intf_L[i].put(p.to_byte_S(), True)
-                        print('%s: forwarding packet "%s" from interface %d to %d with mtu %d'
-                              % (self, p, i, i, out_mtu))
+                        #print('%s: forwarding packet "%s" from interface %d to %d with mtu %d'
+                        #      % (self, p, i, i, out_mtu))
 
             except queue.Full:
-                print('%s: packet "%s" lost on interface %d' % (self, p, i))
+                #print('%s: packet "%s" lost on interface %d' % (self, p, i))
                 pass
 
     # thread target for the host to keep forwarding data
