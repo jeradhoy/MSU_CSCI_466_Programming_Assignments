@@ -55,10 +55,10 @@ class NetworkPacket:
     ## extract a packet object from a byte string
     # @param byte_S: byte string representation of the packet
     @classmethod
-    def from_byte_S(self, byte_S):
+    def from_byte_S(cls, byte_S):
         dst_addr = int(byte_S[0 : NetworkPacket.dst_addr_S_length])
         data_S = byte_S[NetworkPacket.dst_addr_S_length : ]
-        return self(dst_addr, data_S)
+        return cls(dst_addr, data_S)
     
 
     
