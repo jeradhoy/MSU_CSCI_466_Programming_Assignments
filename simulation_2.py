@@ -48,7 +48,7 @@ if __name__ == '__main__':
     
     #create some send events    
     
-    client.udt_send(2, 1, 0, 1, 'Here is a string thats longer than the MTU of the next link FRAGMENT THIS')
+    client.udt_send(2, 1, 0, 0, 'Here is a string thats longer than the MTU of the next link FRAGMENT THIS')
     
     
     #give the network sufficient time to transfer all packets before quitting
