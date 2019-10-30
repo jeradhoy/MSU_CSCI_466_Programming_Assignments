@@ -43,15 +43,23 @@ if __name__ == '__main__':
     #link parameters: from_node, from_intf_num, to_node, to_intf_num, mtu
     link_layer.add_link(link.Link(client1, 0, router_a, 0, 50))
     link_layer.add_link(link.Link(client2, 0, router_a, 0, 50))
-    link_layer.add_link(link.Link(router_a, 0, router_a, 0, 50))
-    link_layer.add_link(link.Link(router_a, 0, server1, 0, 50))
-    
+    link_layer.add_link(link.Link(router_a, 0, router_b, 0, 50))
+    link_layer.add_link(link.Link(router_a, 0, router_c, 1, 50))
+    link_layer.add_link(link.Link(router_b, 0, router_d, 0, 50))
+    link_layer.add_link(link.Link(router_c, 0, router_d, 0, 50))
+    link_layer.add_link(link.Link(router_d, 0, server1, 0, 50))
+    link_layer.add_link(link.Link(router_d, 0, server2, 1, 50))
     
     #start all the objects
     thread_L = []
     thread_L.append(threading.Thread(name=client1.__str__(), target=client1.run))
+    thread_L.append(threading.Thread(name=client2.__str__(), target=client2.run))
     thread_L.append(threading.Thread(name=server1.__str__(), target=server1.run))
+    thread_L.append(threading.Thread(name=server2.__str__(), target=server2.run))
     thread_L.append(threading.Thread(name=router_a.__str__(), target=router_a.run))
+    thread_L.append(threading.Thread(name=router_b.__str__(), target=router_b.run))
+    thread_L.append(threading.Thread(name=router_c.__str__(), target=router_c.run))
+    thread_L.append(threading.Thread(name=router_d.__str__(), target=router_d.run))
     
     thread_L.append(threading.Thread(name="Network", target=link_layer.run))
     
