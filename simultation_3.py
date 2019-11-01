@@ -18,11 +18,13 @@ if __name__ == '__main__':
     #create network nodes
     client1 = network.Host(1)
     client2 = network.Host(2)
+
     object_L.append(client1)
     object_L.append(client2)
 
     server1 = network.Host(3)
     server2 = network.Host(4)
+
     object_L.append(server1)
     object_L.append(server2)
 
@@ -30,6 +32,7 @@ if __name__ == '__main__':
     router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size)
     router_c = network.Router(name='C', intf_count=1, max_queue_size=router_queue_size)
     router_d = network.Router(name='D', intf_count=2, max_queue_size=router_queue_size)
+
     object_L.append(router_a)
     object_L.append(router_b)
     object_L.append(router_c)
@@ -62,10 +65,20 @@ if __name__ == '__main__':
     thread_L.append(threading.Thread(name=router_d.__str__(), target=router_d.run))
     
     thread_L.append(threading.Thread(name="Network", target=link_layer.run))
+
+
+    #"Destination_number": "interface_number"
+    routing_table_a = {
+    }
+    routing_table_b = {
+    }
+    routing_table_c = {
+    }
+    routing_table_d = {
+    }
     
     for t in thread_L:
         t.start()
-    
     
     #create some send events    
     for i in range(3):
