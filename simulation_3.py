@@ -62,17 +62,6 @@ if __name__ == '__main__':
     thread_L.append(threading.Thread(name=router_d.__str__(), target=router_d.run))
     
     thread_L.append(threading.Thread(name="Network", target=link_layer.run))
-
-
-    #"Destination_number": "interface_number"
-    routing_table_a = {
-    }
-    routing_table_b = {
-    }
-    routing_table_c = {
-    }
-    routing_table_d = {
-    }
     
     for t in thread_L:
         t.start()

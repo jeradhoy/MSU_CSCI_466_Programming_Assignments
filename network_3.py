@@ -94,11 +94,12 @@ class NetworkPacket:
         currentOffset = packet.offset
         currentFlag = packet.flag
 
+        print("breaking up packet")
         while True:
 
             if len(msg) > newPayloadSize:
 
-                print("breaking up packet")
+                
                 msg_seg = msg[0:newPayloadSize]
                 msg = msg[newPayloadSize:]
                 new_packet = cls(packet.dst_addr, packet.id, currentOffset, 1, msg_seg)
