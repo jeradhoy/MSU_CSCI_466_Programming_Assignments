@@ -228,7 +228,7 @@ class Router:
     # @param name: friendly router name for debugging
     # @param intf_count: the number of input and output interfaces
     # @param max_queue_size: max queue length (passed to Interface)
-    def __init__(self, name, intf_count, max_queue_size, forwarding_table):
+    def __init__(self, name, intf_count, max_queue_size, forwarding_table, input_node: bool):
         self.stop = False  # for thread termination
         self.name = name
         # create a list of interfaces
@@ -236,6 +236,7 @@ class Router:
         self.out_intf_L = [Interface(max_queue_size)
                            for _ in range(intf_count)]
         self.forwarding_table = forwarding_table
+        self.input_node = input_node
 
     # called when printing the object
     def __str__(self):
@@ -254,7 +255,10 @@ class Router:
                     
                     
                     p = NetworkPacket.from_byte_S(pkt_S)  # parse a packet out
-                    out_interface = self.forwarding_table[p.dst_addr]
+                    if self.input_node == True:
+                        out_interface = i#self.forwarding_table[i]
+                    else:
+                        out_interface = self.forwarding_table[p.dst_addr]
                     out_mtu = self.out_intf_L[out_interface].mtu
                     # HERE you will need to implement a lookup into the
                     # forwarding table to find the appropriate outgoing interface

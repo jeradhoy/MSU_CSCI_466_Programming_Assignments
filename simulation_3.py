@@ -31,13 +31,13 @@ if __name__ == '__main__':
     forwarding_table_c = {3:0, 4:0}
     forwarding_table_d = {3:0, 4:1}
 
-    router_a = network.Router(name='A', intf_count=2, max_queue_size=router_queue_size, forwarding_table=forwarding_table_a)
+    router_a = network.Router(name='A', intf_count=2, max_queue_size=router_queue_size, forwarding_table=forwarding_table_a, input_node=True)
     object_L.append(router_a)
-    router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size, forwarding_table=forwarding_table_b)
+    router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size, forwarding_table=forwarding_table_b, input_node=False)
     object_L.append(router_b)
-    router_c = network.Router(name='C', intf_count=1, max_queue_size=router_queue_size, forwarding_table=forwarding_table_c)
+    router_c = network.Router(name='C', intf_count=1, max_queue_size=router_queue_size, forwarding_table=forwarding_table_c, input_node=False)
     object_L.append(router_c)
-    router_d = network.Router(name='D', intf_count=2, max_queue_size=router_queue_size, forwarding_table=forwarding_table_d) 
+    router_d = network.Router(name='D', intf_count=2, max_queue_size=router_queue_size, forwarding_table=forwarding_table_d, input_node=False) 
     object_L.append(router_d)
     
     #create a Link Layer to keep track of links between network nodes
