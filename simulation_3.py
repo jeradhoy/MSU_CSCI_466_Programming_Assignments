@@ -26,13 +26,18 @@ if __name__ == '__main__':
     server2 = network.Host(4)
     object_L.append(server2)
 
-    router_a = network.Router(name='A', intf_count=2, max_queue_size=router_queue_size, forwarding_table={3:0, 4:1})
+    forwarding_table_a = {3:0, 4:1}
+    forwarding_table_b = {3:0, 4:0}
+    forwarding_table_c = {3:0, 4:0}
+    forwarding_table_d = {3:0, 4:1}
+
+    router_a = network.Router(name='A', intf_count=2, max_queue_size=router_queue_size, forwarding_table=forwarding_table_a)
     object_L.append(router_a)
-    router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size, forwarding_table={3:0, 4:0})
+    router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size, forwarding_table=forwarding_table_b)
     object_L.append(router_b)
-    router_c = network.Router(name='C', intf_count=1, max_queue_size=router_queue_size, forwarding_table={3:0, 4:0})
+    router_c = network.Router(name='C', intf_count=1, max_queue_size=router_queue_size, forwarding_table=forwarding_table_c)
     object_L.append(router_c)
-    router_d = network.Router(name='D', intf_count=2, max_queue_size=router_queue_size, forwarding_table={3:0, 4:1}) 
+    router_d = network.Router(name='D', intf_count=2, max_queue_size=router_queue_size, forwarding_table=forwarding_table_d) 
     object_L.append(router_d)
     
     #create a Link Layer to keep track of links between network nodes
