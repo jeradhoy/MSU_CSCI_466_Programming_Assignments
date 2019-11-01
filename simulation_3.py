@@ -10,7 +10,7 @@ from time import sleep
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
-simulation_time = 5 #give the network sufficient time to transfer all packets before quitting
+simulation_time = 10 #give the network sufficient time to transfer all packets before quitting
 
 if __name__ == '__main__':
     object_L = [] #keeps track of objects, so we can kill their threads
@@ -70,15 +70,21 @@ if __name__ == '__main__':
     
     for t in thread_L:
         t.start()
+
+    sim_long = True
+    if sim_long == True:
+        long_message = "jjjjjjjjjjjjjjjjjjjjjjjjjjjjalkdjfal;sdjf;laksdjf;lkjasd;lkfjas;ldkjf;laksjdf;lkjasdlkgjjghkfjdnvkjxnfovijfoigjvroingvosdjvojfovisjdvoidjfvoiuhrfbiuhfdoijgfoidjfoij"
+    else:
+        long_message = ""
     
     #create some send events    
-    client1.udt_send(3, 1, 0, 0, 'Client1 to Server1 (Host 3)')
-    client1.udt_send(4, 1, 0, 0, 'Client1 to Server2 (Host 4)')
+    client1.udt_send(3, 1, 0, 0, 'Client1 to Server1 (Host 3)' + long_message)
+    client1.udt_send(4, 1, 0, 0, 'Client1 to Server2 (Host 4)' + long_message)
 
     sleep(simulation_time)
     
-    client2.udt_send(3, 1, 0, 0, 'Client2 to Server1 (Host 3)')
-    client2.udt_send(4, 1, 0, 0, 'Client2 to Server2 (Host 4)')
+    client2.udt_send(3, 1, 0, 0, 'Client2 to Server1 (Host 3)' + long_message)
+    client2.udt_send(4, 1, 0, 0, 'Client2 to Server2 (Host 4)' + long_message)
     
     
     #give the network sufficient time to transfer all packets before quitting
