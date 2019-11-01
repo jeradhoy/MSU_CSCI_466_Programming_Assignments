@@ -72,13 +72,13 @@ if __name__ == '__main__':
         t.start()
     
     #create some send events    
-    client1.udt_send(3, 1, 0, 0, 'Client1 to Server1 (Host 3)')
-    client1.udt_send(4, 1, 0, 0, 'Client1 to Server2 (Host 4)')
+    client1.udt_send(3, 1, client1.addr, 0, 0, 'Client1 to Server1 (Host 3)')
+    client1.udt_send(4, 1, client1.addr, 0, 0, 'Client1 to Server2 (Host 4)')
 
     sleep(simulation_time)
     
-    client2.udt_send(3, 1, 0, 0, 'Client2 to Server1 (Host 3)')
-    client2.udt_send(4, 1, 0, 0, 'Client2 to Server2 (Host 4)')
+    client2.udt_send(3, 1, client2.addr, 0, 0, 'Client2 to Server1 (Host 3)')
+    client2.udt_send(4, 1, client2.addr, 0, 0, 'Client2 to Server2 (Host 4)')
     
     
     #give the network sufficient time to transfer all packets before quitting
