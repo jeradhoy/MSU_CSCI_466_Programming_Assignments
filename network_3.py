@@ -83,22 +83,23 @@ class NetworkPacket:
                         NetworkPacket.offset_length + NetworkPacket.flag_len:]
         return cls(dst_addr, id, offset, flag, data_S)
 
+    # Method to break up a packet that is too long into multiple packets
     @classmethod
-    # for some reason the function notations was breaking the code, so I removed them. 
-    # I prefer having them, so not sure how to get them back - Matteo
     def fragment(cls, packet, mtu: int):
+        # Returns a list of packets
 
+        # initialize packet parameters
         newPayloadSize = mtu - NetworkPacket.header_len
         msg = packet.data_S
         packet_list = []
         currentOffset = packet.offset
         currentFlag = packet.flag
 
-        print("breaking up packet")
+        # Continue breaking packet until the message is less than desired payload size
         while True:
 
+            # Break packet into segements and construct new packets, incrementing offset
             if len(msg) > newPayloadSize:
-
                 
                 msg_seg = msg[0:newPayloadSize]
                 msg = msg[newPayloadSize:]
@@ -106,6 +107,7 @@ class NetworkPacket:
                 packet_list.append(new_packet)
                 currentOffset += newPayloadSize
             else:
+                # Set the final packet flag to 0 only if the packet that is being broken apart has a 0
                 if currentFlag == 0:
                     flagToUse = 0
                 else:
@@ -117,9 +119,9 @@ class NetworkPacket:
 
         return packet_list
 
+    # Method to take a list of segmented packets and reconstruct a full packet from them
+    # Just sorts the packets on the offset and joins the data together
     @classmethod
-    # for some reason the function notations was breaking the code, so I removed them. 
-    # I prefer having them, so not sure how to get them back - Matteo
     def defragment(cls, packet_list):
         sorted_packet_list = sorted(packet_list, key=lambda x: x.offset)
         message_joined = "".join(
@@ -132,24 +134,6 @@ class NetworkPacket:
         print('\n'.join("{k}: {v}".format(k=key, v=val)
                         for (key, val) in self.__dict__.items()))
 
-
-# use this to test fragmentation
-
-# pack = NetworkPacket(
-#     5, 1, 0, 0, "Hellow meowww meow meow i like to go to the toilet and meowoooowowowowowo")
-# len(pack.to_byte_S())
-# print("MTU = 50")
-# print("Packet Header Length: " + str(NetworkPacket.header_len))
-# print("new packet data length: " + str(50 - NetworkPacket.header_len))
-# pack_list = NetworkPacket.fragment(pack, 50)
-# pack_list[0].print()
-# print()
-# pack_list[1].print()
-# print()
-# pack_list[2].print()
-# print()
-
-# NetworkPacket.defragment(pack_list).print()
 
 # Implements a network host for receiving and transmitting data
 
