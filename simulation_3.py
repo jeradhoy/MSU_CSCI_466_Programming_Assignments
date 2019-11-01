@@ -15,22 +15,29 @@ simulation_time = 10 #give the network sufficient time to transfer all packets b
 if __name__ == '__main__':
     object_L = [] #keeps track of objects, so we can kill their threads
     
-    #create network nodes
+    #create client network nodes
     client1 = network.Host(1)
     object_L.append(client1)
     client2 = network.Host(2)
     object_L.append(client2)
 
+    # Create server nodes
     server1 = network.Host(3)
     object_L.append(server1)
     server2 = network.Host(4)
     object_L.append(server2)
 
+<<<<<<< HEAD
     forwarding_table_a = None
+=======
+    # Initialize forwarding tables
+    forwarding_table_a = {3:0, 4:1}
+>>>>>>> ae10a5309bfa072e6f63a8b759a4e5a62fabee8c
     forwarding_table_b = {3:0, 4:0}
     forwarding_table_c = {3:0, 4:0}
     forwarding_table_d = {3:0, 4:1}
 
+    # Create network routers
     router_a = network.Router(name='A', intf_count=2, max_queue_size=router_queue_size, forwarding_table=forwarding_table_a, input_node=True)
     object_L.append(router_a)
     router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size, forwarding_table=forwarding_table_b, input_node=False)
@@ -71,6 +78,7 @@ if __name__ == '__main__':
     for t in thread_L:
         t.start()
 
+    # Add a long message if sim_long is set to true
     sim_long = True
     if sim_long == True:
         long_message = "jjjjjjjjjjjjjjjjjjjjjjjjjjjjalkdjfal;sdjf;laksdjf;lkjasd;lkfjas;ldkjf;laksjdf;lkjasdlkgjjghkfjdnvkjxnfovijfoigjvroingvosdjvojfovisjdvoidjfvoiuhrfbiuhfdoijgfoidjfoij"
