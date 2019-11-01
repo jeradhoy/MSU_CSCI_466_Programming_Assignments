@@ -181,7 +181,7 @@ class Host:
             for pkt in pkt_fragment_list:
                 self.out_intf_L[0].put(pkt.to_byte_S())
                 print('%s: sending packet "%s" on the out interface with mtu=%d' %
-                   (self, p, self.out_intf_L[0].mtu))
+                   (self, pkt, self.out_intf_L[0].mtu))
         else:
             # if outgoing MTU is big enough, send packet
             self.out_intf_L[0].put(p.to_byte_S())
@@ -227,14 +227,14 @@ class Router:
     # @param name: friendly router name for debugging
     # @param intf_count: the number of input and output interfaces
     # @param max_queue_size: max queue length (passed to Interface)
-    def __init__(self, name, intf_count, max_queue_size, routing_table):
+    def __init__(self, name, intf_count, max_queue_size, forwarding_table):
         self.stop = False  # for thread termination
         self.name = name
         # create a list of interfaces
         self.in_intf_L = [Interface(max_queue_size) for _ in range(intf_count)]
         self.out_intf_L = [Interface(max_queue_size)
                            for _ in range(intf_count)]
-        self.routing_table = routing_table
+        self.forwarding_table = forwarding_table
 
     # called when printing the object
     def __str__(self):
@@ -250,8 +250,11 @@ class Router:
                 pkt_S = self.in_intf_L[i].get()
                 # if packet exists make a forwarding decision
                 if pkt_S is not None:
-                    out_mtu = self.out_intf_L[i].mtu
+                    
+                    
                     p = NetworkPacket.from_byte_S(pkt_S)  # parse a packet out
+                    out_interface = self.forwarding_table[p.dst_addr]
+                    out_mtu = self.out_intf_L[out_interface].mtu
                     # HERE you will need to implement a lookup into the
                     # forwarding table to find the appropriate outgoing interface
                     # for now we assume the outgoing interface is also i
@@ -262,14 +265,14 @@ class Router:
                         pkt_fragment_list = NetworkPacket.fragment(p, out_mtu)
                         # send all packet fragments
                         for pkt in pkt_fragment_list:
-                            self.out_intf_L[i].put(pkt.to_byte_S(), True)
-                            #print('%s: forwarding packet "%s" from interface %d to %d with mtu %d'
-                            #    % (self, p, i, i, out_mtu))
+                            self.out_intf_L[out_interface].put(pkt.to_byte_S(), True)
+                            print('%s: forwarding packet "%s" from interface %d to %d with mtu %d'
+                                % (self, pkt, i, out_interface, out_mtu))
                     else:
                         # if outgoing MTU is big enough, send packet
-                        self.out_intf_L[i].put(p.to_byte_S(), True)
-                        #print('%s: forwarding packet "%s" from interface %d to %d with mtu %d'
-                        #      % (self, p, i, i, out_mtu))
+                        self.out_intf_L[out_interface].put(p.to_byte_S(), True)
+                        print('%s: forwarding packet "%s" from interface %d to %d with mtu %d'
+                              % (self, p, i, out_interface, out_mtu))
 
             except queue.Full:
                 #print('%s: packet "%s" lost on interface %d' % (self, p, i))
