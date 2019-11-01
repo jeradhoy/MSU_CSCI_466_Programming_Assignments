@@ -36,11 +36,10 @@ class Interface:
 class NetworkPacket:
     # packet encoding lengths
     dst_addr_S_length = 5
-    src_addr_S_length = 5
     id_length = 5
     offset_length = 13
     flag_len = 1
-    header_len = dst_addr_S_length + src_addr_S_length + id_length + offset_length + flag_len
+    header_len = dst_addr_S_length + id_length + offset_length + flag_len
 
     # @param dst_addr: address of the destination host
     # @param data_S: packet payload
@@ -49,9 +48,8 @@ class NetworkPacket:
     # offset: where the bytes are to be inserted
     # flag: 1 is more fragments are coming, 0 is final fragment
 
-    def __init__(self, dst_addr: int, src_addr: int, id: int, offset: int, flag: int, data_S: str):
+    def __init__(self, dst_addr: int, id: int, offset: int, flag: int, data_S: str):
         self.dst_addr = dst_addr
-        self.src_addr = src_addr
         self.id = id
         self.offset = offset
         self.flag = flag
@@ -64,7 +62,6 @@ class NetworkPacket:
     # convert packet to a byte string for transmission over links
     def to_byte_S(self):
         byte_S = str(self.dst_addr).zfill(self.dst_addr_S_length)
-        byte_S = str(self.src_addr).zfill(self.src_addr_S_length)
         byte_S += str(self.id).zfill(self.id_length)
         byte_S += str(self.offset).zfill(self.offset_length)
         byte_S += str(self.flag)
@@ -76,7 +73,6 @@ class NetworkPacket:
     @classmethod
     def from_byte_S(cls, byte_S: str):
         dst_addr = int(byte_S[0: NetworkPacket.dst_addr_S_length])
-        src_addr = int(byte_S[0: NetworkPacket.src_addr_S_length])
         id = int(
             byte_S[NetworkPacket.dst_addr_S_length:NetworkPacket.dst_addr_S_length + NetworkPacket.id_length])
         offset = int(byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.id_length:
@@ -106,7 +102,7 @@ class NetworkPacket:
                 
                 msg_seg = msg[0:newPayloadSize]
                 msg = msg[newPayloadSize:]
-                new_packet = cls(packet.dst_addr, packet.src_addr, packet.id, currentOffset, 1, msg_seg)
+                new_packet = cls(packet.dst_addr, packet.id, currentOffset, 1, msg_seg)
                 packet_list.append(new_packet)
                 currentOffset += newPayloadSize
             else:
@@ -115,7 +111,7 @@ class NetworkPacket:
                 else:
                     flagToUse = 1
 
-                new_packet = cls(packet.dst_addr, packet.src_addr, packet.id, currentOffset, flagToUse, msg)
+                new_packet = cls(packet.dst_addr, packet.id, currentOffset, flagToUse, msg)
                 packet_list.append(new_packet)
                 break
 
@@ -129,7 +125,6 @@ class NetworkPacket:
         message_joined = "".join(
             [packet.data_S for packet in sorted_packet_list])
         new_packet = cls(packet_list[0].dst_addr,
-                         packet_list[0].src_addr,
                          packet_list[0].id, 0, 0, message_joined)
         return new_packet
 
