@@ -10,7 +10,7 @@ from time import sleep
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
-simulation_time = 5 #give the network sufficient time to transfer all packets before quitting
+simulation_time = 10 #give the network sufficient time to transfer all packets before quitting
 
 if __name__ == '__main__':
     object_L = [] #keeps track of objects, so we can kill their threads
@@ -26,18 +26,18 @@ if __name__ == '__main__':
     server2 = network.Host(4)
     object_L.append(server2)
 
-    forwarding_table_a = {3:0, 4:1}
+    forwarding_table_a = None
     forwarding_table_b = {3:0, 4:0}
     forwarding_table_c = {3:0, 4:0}
     forwarding_table_d = {3:0, 4:1}
 
-    router_a = network.Router(name='A', intf_count=2, max_queue_size=router_queue_size, forwarding_table=forwarding_table_a)
+    router_a = network.Router(name='A', intf_count=2, max_queue_size=router_queue_size, forwarding_table=forwarding_table_a, input_node=True)
     object_L.append(router_a)
-    router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size, forwarding_table=forwarding_table_b)
+    router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size, forwarding_table=forwarding_table_b, input_node=False)
     object_L.append(router_b)
-    router_c = network.Router(name='C', intf_count=1, max_queue_size=router_queue_size, forwarding_table=forwarding_table_c)
+    router_c = network.Router(name='C', intf_count=1, max_queue_size=router_queue_size, forwarding_table=forwarding_table_c, input_node=False)
     object_L.append(router_c)
-    router_d = network.Router(name='D', intf_count=2, max_queue_size=router_queue_size, forwarding_table=forwarding_table_d) 
+    router_d = network.Router(name='D', intf_count=2, max_queue_size=router_queue_size, forwarding_table=forwarding_table_d, input_node=False) 
     object_L.append(router_d)
     
     #create a Link Layer to keep track of links between network nodes
@@ -70,15 +70,21 @@ if __name__ == '__main__':
     
     for t in thread_L:
         t.start()
+
+    sim_long = True
+    if sim_long == True:
+        long_message = "jjjjjjjjjjjjjjjjjjjjjjjjjjjjalkdjfal;sdjf;laksdjf;lkjasd;lkfjas;ldkjf;laksjdf;lkjasdlkgjjghkfjdnvkjxnfovijfoigjvroingvosdjvojfovisjdvoidjfvoiuhrfbiuhfdoijgfoidjfoij"
+    else:
+        long_message = ""
     
     #create some send events    
-    client1.udt_send(3, 1, client1.addr, 0, 0, 'Client1 to Server1 (Host 3)')
-    client1.udt_send(4, 1, client1.addr, 0, 0, 'Client1 to Server2 (Host 4)')
+    client1.udt_send(3, 1, 0, 0, 'Client1 to Server1 (Host 3)' + long_message)
+    client1.udt_send(4, 1, 0, 0, 'Client1 to Server2 (Host 4)' + long_message)
 
     sleep(simulation_time)
     
-    client2.udt_send(3, 1, client2.addr, 0, 0, 'Client2 to Server1 (Host 3)')
-    client2.udt_send(4, 1, client2.addr, 0, 0, 'Client2 to Server2 (Host 4)')
+    client2.udt_send(3, 1, 0, 0, 'Client2 to Server1 (Host 3)' + long_message)
+    client2.udt_send(4, 1, 0, 0, 'Client2 to Server2 (Host 4)' + long_message)
     
     
     #give the network sufficient time to transfer all packets before quitting

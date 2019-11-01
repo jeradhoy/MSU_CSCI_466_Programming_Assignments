@@ -84,8 +84,6 @@ class NetworkPacket:
         return cls(dst_addr, id, offset, flag, data_S)
 
     @classmethod
-    # for some reason the function notations was breaking the code, so I removed them. 
-    # I prefer having them, so not sure how to get them back - Matteo
     def fragment(cls, packet, mtu: int):
 
         newPayloadSize = mtu - NetworkPacket.header_len
@@ -118,8 +116,6 @@ class NetworkPacket:
         return packet_list
 
     @classmethod
-    # for some reason the function notations was breaking the code, so I removed them. 
-    # I prefer having them, so not sure how to get them back - Matteo
     def defragment(cls, packet_list):
         sorted_packet_list = sorted(packet_list, key=lambda x: x.offset)
         message_joined = "".join(
@@ -133,23 +129,6 @@ class NetworkPacket:
                         for (key, val) in self.__dict__.items()))
 
 
-# use this to test fragmentation
-
-# pack = NetworkPacket(
-#     5, 1, 0, 0, "Hellow meowww meow meow i like to go to the toilet and meowoooowowowowowo")
-# len(pack.to_byte_S())
-# print("MTU = 50")
-# print("Packet Header Length: " + str(NetworkPacket.header_len))
-# print("new packet data length: " + str(50 - NetworkPacket.header_len))
-# pack_list = NetworkPacket.fragment(pack, 50)
-# pack_list[0].print()
-# print()
-# pack_list[1].print()
-# print()
-# pack_list[2].print()
-# print()
-
-# NetworkPacket.defragment(pack_list).print()
 
 # Implements a network host for receiving and transmitting data
 
@@ -189,11 +168,6 @@ class Host:
             print('%s: sending packet "%s" on the out interface with mtu=%d' %
                (self, p, self.out_intf_L[0].mtu))
 
-        # send packets always enqueued successfully
-        # self.out_intf_L[0].put(p.to_byte_S())
-        # print('%s: sending packet "%s" on the out interface with mtu=%d' %
-        #       (self, p, self.out_intf_L[0].mtu))
-
     # receive packet from the network layer
     def udt_receive(self) -> str:
         pkt_S = self.in_intf_L[0].get()
@@ -228,7 +202,7 @@ class Router:
     # @param name: friendly router name for debugging
     # @param intf_count: the number of input and output interfaces
     # @param max_queue_size: max queue length (passed to Interface)
-    def __init__(self, name, intf_count, max_queue_size, forwarding_table):
+    def __init__(self, name, intf_count, max_queue_size, forwarding_table, input_node: bool):
         self.stop = False  # for thread termination
         self.name = name
         # create a list of interfaces
@@ -236,6 +210,7 @@ class Router:
         self.out_intf_L = [Interface(max_queue_size)
                            for _ in range(intf_count)]
         self.forwarding_table = forwarding_table
+        self.input_node = input_node
 
     # called when printing the object
     def __str__(self):
@@ -252,13 +227,19 @@ class Router:
                 # if packet exists make a forwarding decision
                 if pkt_S is not None:
                     
-                    
                     p = NetworkPacket.from_byte_S(pkt_S)  # parse a packet out
-                    out_interface = self.forwarding_table[p.dst_addr]
+
+                    # to route all traffic from source 1 through router B and from source 2 through 
+                    # router C we added a "input node" parameter to each router. If true, the router
+                    # forwards traffic based on source as opposed to destination. 
+                    if self.input_node == True:
+                        out_interface = i
+                    else:
+                        # output interface is selected based on router forwarding table:
+                        out_interface = self.forwarding_table[p.dst_addr]
+                    
+                    # out link mtu is stored for convenience
                     out_mtu = self.out_intf_L[out_interface].mtu
-                    # HERE you will need to implement a lookup into the
-                    # forwarding table to find the appropriate outgoing interface
-                    # for now we assume the outgoing interface is also i
 
                     # if packet is too big for outgoing MTU, fragment packet
                     if (len(pkt_S) > out_mtu):
