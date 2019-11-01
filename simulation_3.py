@@ -27,8 +27,7 @@ if __name__ == '__main__':
     server2 = network.Host(4)
     object_L.append(server2)
 
-    # Initialize forwarding tables
-    forwarding_table_a = {3:0, 4:1}
+    forwarding_table_a = None
     forwarding_table_b = {3:0, 4:0}
     forwarding_table_c = {3:0, 4:0}
     forwarding_table_d = {3:0, 4:1}

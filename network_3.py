@@ -136,8 +136,6 @@ class NetworkPacket:
 
 
 # Implements a network host for receiving and transmitting data
-
-
 class Host:
 
     # @param addr: address of this node represented as an integer
@@ -172,11 +170,6 @@ class Host:
             self.out_intf_L[0].put(p.to_byte_S())
             print('%s: sending packet "%s" on the out interface with mtu=%d' %
                (self, p, self.out_intf_L[0].mtu))
-
-        # send packets always enqueued successfully
-        # self.out_intf_L[0].put(p.to_byte_S())
-        # print('%s: sending packet "%s" on the out interface with mtu=%d' %
-        #       (self, p, self.out_intf_L[0].mtu))
 
     # receive packet from the network layer
     def udt_receive(self) -> str:
@@ -237,16 +230,19 @@ class Router:
                 # if packet exists make a forwarding decision
                 if pkt_S is not None:
                     
-                    
                     p = NetworkPacket.from_byte_S(pkt_S)  # parse a packet out
+
+                    # to route all traffic from source 1 through router B and from source 2 through 
+                    # router C we added a "input node" parameter to each router. If true, the router
+                    # forwards traffic based on source as opposed to destination. 
                     if self.input_node == True:
-                        out_interface = i#self.forwarding_table[i]
+                        out_interface = i
                     else:
+                        # output interface is selected based on router forwarding table:
                         out_interface = self.forwarding_table[p.dst_addr]
+                    
+                    # out link mtu is stored for convenience
                     out_mtu = self.out_intf_L[out_interface].mtu
-                    # HERE you will need to implement a lookup into the
-                    # forwarding table to find the appropriate outgoing interface
-                    # for now we assume the outgoing interface is also i
 
                     # if packet is too big for outgoing MTU, fragment packet
                     if (len(pkt_S) > out_mtu):
